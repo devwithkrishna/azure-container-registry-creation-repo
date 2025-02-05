@@ -10,11 +10,6 @@ resource "azurerm_resource_group" "acr_rg" {
   }
 }
 
-provider "azurerm" {
-  version         = "=4.0.0"
-  features {}
-}
-
 resource "azurerm_container_registry" "acr" {
   name                = "myContwainerxdeXgi00y"
   resource_group_name = azurerm_resource_group.acr_rg.name
@@ -36,7 +31,7 @@ resource "azurerm_container_registry" "acr" {
   }
   georeplications {
 
-      location                = "CentralIndia"
+      location                = "eastus2"
       zone_redundancy_enabled = true
       tags = {
         Environment     = "DEV"
