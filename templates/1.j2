@@ -1,0 +1,53 @@
+{% raw %}
+resource "azurerm_resource_group" "acr_rg" {
+  name     = "{{ resource_group_name }}"
+  location = "{{ location }}"
+  tags = {
+    Environment     = "{{ environment | upper }}"
+    Orchestrator    = "Terraform"
+    DisplayName     = "{{ resource_group_name | upper }}"
+    ApplicationName = "{{ application_name | lower }}"
+    Temporary       = "{{ temporary | upper }}"
+  }
+}
+
+resource "azurerm_container_registry" "acr" {
+  name                = "{{ container_registry_name }}"
+  resource_group_name = azurerm_resource_group.acr_rg.name
+  location            = azurerm_resource_group.acr_rg.location
+  sku                 = "{{ sku_name }}"
+
+  dynamic "georeplications" {
+    for_each = {{ [var.georeplications] }}
+    content {
+      location                = "{{ georeplications.value.location }}"
+      zone_redundancy_enabled = "{{ sku_name == 'Premium' ? georeplications.value.zone_redundancy_enabled : false }}"
+      tags = {
+        Environment     = "{{ environment | upper }}"
+        Orchestrator    = "Terraform"
+        DisplayName     = "replication-{{ container_registry_name | upper }}"
+        ApplicationName = "{{ application_name | lower }}"
+        Temporary       = "{{ temporary | upper }}"
+      }
+    }
+  }
+
+  retention_policy_in_days      = "{{ sku_name == 'Premium' ? container_registry_config.retention_policy_in_days : null }}"
+  public_network_access_enabled = "{{ container_registry_config.public_network_access_enabled }}"
+  quarantine_policy_enabled     = "{{ sku_name == 'Premium' ? container_registry_config.quarantine_policy_enabled : false }}"
+  zone_redundancy_enabled       = "{{ sku_name == 'Premium' ? container_registry_config.zone_redundancy_enabled : false }}"
+  admin_enabled                 = "{{ container_registry_config.admin_enabled }}"
+  anonymous_pull_enabled        = "{{ sku_name != 'Basic' ? container_registry_config.anonymous_pull_enabled : false }}"
+  data_endpoint_enabled         = "{{ sku_name == 'Premium' ? container_registry_config.data_endpoint_enabled : false }}"
+  trust_policy_enabled          = "{{ sku_name == 'Premium' ? container_registry_config.trust_policy_enabled : false }}"
+
+  network_rule_bypass_option = "{{ azure_services_bypass }}"
+  tags = {
+    Environment     = "{{ environment | upper }}"
+    Orchestrator    = "Terraform"
+    DisplayName     = "{{ container_registry_name | upper }}"
+    ApplicationName = "{{ application_name | lower }}"
+    Temporary       = "{{ temporary | upper }}"
+  }
+}
+{% endraw %}

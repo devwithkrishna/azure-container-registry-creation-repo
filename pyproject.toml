@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "azure-container-registry-creation-repo"
+version = "0.1.0"
+description = "Contains Template terraform file for Azure Container Registry Creation"
+authors = ["githubofkrishnadhas <krishnadhasnk1997@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Jinja2 = "^3.1.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
