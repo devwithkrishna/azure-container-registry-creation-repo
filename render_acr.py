@@ -1,5 +1,6 @@
 from jinja2 import Environment, FileSystemLoader
 import os
+import json
 
 
 def render_template(template_name: str, template_vars: dict, output_file_path: str):
@@ -35,31 +36,22 @@ def render_template(template_name: str, template_vars: dict, output_file_path: s
 		print(f"Error while rendering template: {e}")
 
 
-# Example usage
-template_vars = {
-	"resource_group_name": "myResourceGroup",
-	"location": "centralIndia",
-	"environment": "dev",
-	"application_name": "devwithkrishna",
-	"temporary": "true",
-	"container_registry_name": "myContwainerxdeXgi00y",
-	"sku_name": "Premium",
-	"georeplications": [
-		{"location": "SouthIndia", "zone_redundancy_enabled": "false"},
-		{"location": "eastus2", "zone_redundancy_enabled": "true"}
-	],
-	"container_registry_config": {
-		"retention_policy_in_days": 37,
-		"public_network_access_enabled": "true",
-		"quarantine_policy_enabled": "true",
-		"zone_redundancy_enabled": "true",
-		"admin_enabled": "true",
-		"anonymous_pull_enabled": "true",
-		"data_endpoint_enabled": "true",
-		"trust_policy_enabled": "true"
-	},
-	"azure_services_bypass": "None"
-}
+
+def main():
+	"""Render the main.tf file using the provided template variables."""
+	# read json file
+	file_name = 'terraform.tfvars.json'
+	print(f"Reading the template variables from {file_name}")
+ 
+	with open(file_name) as f:
+		template_vars = json.load(f)
+	
+	# print template variables
+	print(f"The template variables are : \n {template_vars}")
+
+	render_template("templates/main.tf.j2", template_vars, "main.tf")
+
 
 # Function call example
-render_template("templates/main.tf.j2", template_vars, "main.tf")
+if __name__ == "__main__":
+	main()
